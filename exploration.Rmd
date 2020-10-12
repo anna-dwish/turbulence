@@ -1,0 +1,131 @@
+---
+title: "exploration"
+author: "Anna Darwish"
+date: "10/12/2020"
+output: pdf_document
+---
+
+```{r, function checking for installed packages, include=FALSE}
+# Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,repos = "http://cran.r-project.org", dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+```
+
+```{r include=FALSE}
+# Installing packages 
+pkgTest("tidyverse")
+pkgTest("knitr")
+pkgTest("kableExtra")
+pkgTest("dplyr")
+pkgTest("ggplot2")
+pkgTest("tidyr")
+pkgTest("gridExtra")
+```
+
+```{r include=FALSE}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(gridExtra)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+ggplot2::theme_set(new = theme_bw())
+```
+
+```{r Read In Data}
+turbulence <- read.csv("data-train.csv")
+
+turbulence$Re <- as.factor(turbulence$Re)
+# original levels were 224  90 398
+levels(turbulence$Re) <- c("Med", "Low", "High")
+
+turbulence$Fr <- as.factor(turbulence$Fr)
+# original levels were 0.052, 0.3, Inf
+levels(turbulence$Fr) <- c("Low", "Inf", "Med") 
+```
+
+# Exploratory Data Analysis
+
+## Moment 1
+
+### Initial Plots
+
+```{r Moment 1 Plots}
+p1 <- ggplot(turbulence, aes(x = Re, y = R_moment_1)) + geom_boxplot()
+p2 <- ggplot(turbulence, aes(x = Fr, y = R_moment_1)) + geom_boxplot()
+p3 <- ggplot(turbulence, aes(x=St, y=R_moment_1)) + geom_point()
+grid.arrange(p1, p2, p3, nrow = 2)
+```
+
+### Naive Model
+
+```{r Moment 1 Model}
+mod.moment1 <- lm(R_moment_1 ~ Re + Fr + St, data=turbulence)
+summary(mod.moment1)
+```
+
+## Moment 2
+
+### Initial Plots
+
+```{r Moment 2 Plots}
+p1 <- ggplot(turbulence, aes(x = Re, y = R_moment_2)) + geom_boxplot()
+p2 <- ggplot(turbulence, aes(x = Fr, y = R_moment_2)) + geom_boxplot()
+p3 <- ggplot(turbulence, aes(x=St, y=R_moment_2)) + geom_point()
+grid.arrange(p1, p2, p3, nrow = 2)
+```
+
+### Naive Model
+
+```{r Moment 2 Model}
+mod.moment2 <- lm(R_moment_2 ~ Re + Fr + St, data=turbulence)
+summary(mod.moment2)
+```
+
+## Moment 3
+
+### Initial Plots
+
+```{r Moment 3 Plots}
+p1 <- ggplot(turbulence, aes(x = Re, y = R_moment_3)) + geom_boxplot()
+p2 <- ggplot(turbulence, aes(x = Fr, y = R_moment_3)) + geom_boxplot()
+p3 <- ggplot(turbulence, aes(x=St, y=R_moment_3)) + geom_point()
+grid.arrange(p1, p2, p3, nrow = 2)
+```
+
+### Naive Model
+
+```{r Moment 3 Model}
+mod.moment3 <- lm(R_moment_3 ~ Re + Fr + St, data=turbulence)
+summary(mod.moment3)
+```
+
+## Moment 4
+
+### Initial Plots
+
+```{r Moment 4 Plots}
+p1 <- ggplot(turbulence, aes(x = Re, y = R_moment_4)) + geom_boxplot()
+p2 <- ggplot(turbulence, aes(x = Fr, y = R_moment_4)) + geom_boxplot()
+p3 <- ggplot(turbulence, aes(x=St, y=R_moment_4)) + geom_point()
+grid.arrange(p1, p2, p3, nrow = 2)
+```
+
+### Naive Model
+
+```{r Moment 4 Model}
+mod.moment4 <- lm(R_moment_4 ~ Re + Fr + St, data=turbulence)
+summary(mod.moment4)
+```
+
+
