@@ -1,0 +1,20 @@
+---
+title: "2nd moment test"
+author: "Thea Dowrich"
+date: "10/17/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(tidyverse)
+```
+
+
+```{r}
+
+```
+
