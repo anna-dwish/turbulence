@@ -56,6 +56,13 @@ summary(lm3)
 ```
 Tried with interaction terms and they do appear to be significant, so going to keep them in. But also Re398:Fr0.3 is returning NA, unclear why though. 
 
+```{r polynomials}
+lm4 <- lm(R_moment_2 ~ Re + Fr + poly(St, 5), data = turbtrain)
+summary(lm4)
+```
+`St` not even significant in polynomial form, so I think I'm going to keep not using it.
+
+Re and Fr are my only 2 relevant variables, so need to figure out more ways to play around with them besides just making them interact. 
 
 
 
