@@ -9,12 +9,22 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r packages}
+```{r packages, include = FALSE}
 library(tidyverse)
 ```
 
+```{r data, include = FALSE}
+turbtrain <- read.csv("data-train.csv")
+```
 
-```{r}
+```{r check-ranges}
+hist(turbtrain$St)
+hist(turbtrain$Re) #3 distinct groups
+hist(turbtrain$Fr) #2 distinct groups (+ infinity)
+```
 
+```{r refactor}
+turbtrain$Re <- as.factor(turbtrain$Re)
+turbtrain$Fr <- as.factor(turbtrain$Fr)
 ```
 
