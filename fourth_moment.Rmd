@@ -1,0 +1,57 @@
+---
+title: "4th Moment Model"
+author: "Matty Pahren"
+date: "10/17/2020"
+output: pdf_document
+---
+
+```{r Read In Data}
+turbulence <- read.csv("data-train.csv")
+
+turbulence$Re <- as.factor(turbulence$Re)
+# original levels were 224  90 398
+levels(turbulence$Re) <- c("Med", "Low", "High")
+
+turbulence$Fr <- as.factor(turbulence$Fr)
+# original levels were 0.052, 0.3, Inf
+levels(turbulence$Fr) <- c("Low", "Inf", "Med") 
+```
+
+```{r}
+mod.moment4 <- lm(R_moment_4 ~ Re + Fr + St, data=turbulence)
+summary(mod.moment4)
+plot(mod.moment4)
+```
+
+```{r}
+m1 <- lm(R_moment_4 ~ Re + Fr, data=turbulence)
+summary(m1)
+plot(m1)
+```
+
+
+```{r}
+m2 <- lm(log(R_moment_4) ~ Re + Fr + St + Re*Fr + Re*St + Fr*St, data=turbulence)
+summary(m2)
+plot(m2)
+```
+
+```{r}
+m3 <- lm(log(R_moment_4) ~ Re + Fr + Re*Fr, data=turbulence)
+summary(m3)
+plot(m3)
+```
+
+```{r}
+m4 <- lm(log(R_moment_4) ~ Re + Fr + St + Re*Fr + Re*St, data=turbulence)
+summary(m4)
+plot(m4)
+```
+```{r}
+m5 <- lm(log(R_moment_4) ~ Re + Fr + St + Re*Fr, data=turbulence)
+summary(m5)
+plot(m5)
+```
+
+
+
