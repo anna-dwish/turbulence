@@ -1,0 +1,136 @@
+---
+title: "moment1"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+## Make Dataframe
+
+```{r}
+turbulence = read.csv("data-train.csv")
+
+turbulence$Sv = turbulence$St / turbulence$Fr
+
+#turbulence$Fr_clean = boot::inv.logit(turbulence$Fr)
+
+turbulence$Re_factor <- as.factor(turbulence$Re)
+# original levels were 224  90 398
+levels(turbulence$Re_factor) <- c("Low", "Med", "High")
+```
+
+## Additional EDA
+
+```{r}
+#plot(turbulence$St, turbulence$R_moment_1)
+
+ggplot(turbulence,aes(St,R_moment_1,color=Re_factor))+geom_point()
+
+ggplot(turbulence,aes(Sv,R_moment_1,color=Re_factor))+geom_point()
+
+
+#moment1_df = turbulence %>% select(c(St, Re, Sv, R_moment_1))
+```
+
+```{r}
+library(ggplot2)
+ggplot(turbulence, aes(x = Re_factor, y = R_moment_1)) + geom_boxplot()
+
+```
+
+## Incremental Models
+
+### Main Effects Model
+
+```{r}
+linear_model <- lm(R_moment_1 ~ Re_factor + St + Sv, data=turbulence)
+summary(linear_model)
+plot(linear_model, which=c(1))
+```
+
+```{r}
+linear_model_glm = glm(R_moment_1 ~ Re_factor + St + Sv, data=turbulence)
+cv.glm(turbulence, linear_model_glm)$delta[1]
+```
+
+### Interactions Model
+
+```{r}
+inter_model <- lm(R_moment_1 ~ Re_factor + St + St*Re_factor + Sv + Sv*Re_factor, data=turbulence)
+summary(inter_model)
+plot(inter_model, which=c(1))
+```
+
+```{r}
+inter_model_glm = glm(R_moment_1 ~ Re_factor + St + St*Re_factor + Sv + Sv*Re_factor, data=turbulence)
+cv.glm(turbulence, inter_model_glm)$delta[1]
+```
+
+### Interactions + Squared Sv Term
+
+```{r}
+turbulence$Sv_2 = turbulence$Sv^2
+
+inter_model2 <- lm(R_moment_1 ~ Re_factor + St + Sv_2 + St*Re_factor+ Sv_2*Re_factor + Sv + Sv*Re_factor, data=turbulence)
+summary(inter_model2)
+plot(inter_model2, which=c(1))
+```
+
+```{r}
+inter_model2_glm = glm(R_moment_1 ~ Re_factor + St + Sv_2 + St*Re_factor+ Sv_2*Re_factor + Sv + Sv*Re_factor, data=turbulence)
+cv.glm(turbulence, inter_model2_glm)$delta[1]
+```
+
+
+## Additional Models
+
+### Squared St Term
+
+```{r}
+turbulence$St_2 = turbulence$St^2
+
+inter_model3 <- lm(R_moment_1 ~ Re_factor + St + St_2 + St*Re_factor+ St_2*Re_factor + Sv + Sv*Re_factor, data=turbulence)
+summary(inter_model3)
+plot(inter_model3, which=c(1))
+```
+
+```{r}
+inter_model3_glm = glm(R_moment_1 ~ Re_factor + St + St_2 + St*Re_factor+ St_2*Re_factor + Sv + Sv*Re_factor, data=turbulence)
+cv.glm(turbulence, inter_model3_glm)$delta[1]
+```
+
+### Squared St and Sv Terms
+
+```{r}
+inter_model4 <- lm(R_moment_1 ~ Re_factor + St + St_2 + St*Re_factor+ St_2*Re_factor + Sv + Sv*Re_factor + Sv_2 + Sv_2*Re_factor, data=turbulence)
+summary(inter_model4)
+plot(inter_model4, which=c(1))
+```
+
+```{r}
+inter_model4_glm = glm(R_moment_1 ~ Re_factor + St + St_2 + St*Re_factor+ St_2*Re_factor + Sv + Sv*Re_factor + Sv_2 + Sv_2*Re_factor, data=turbulence)
+cv.glm(turbulence, inter_model4_glm)$delta[1]
+```
+
+## St with Natural Cubic Spline
+
+```{r}
+#inter_model5 <- lm(R_moment_1 ~ Re_factor + St + ns(Sv,df=2) + St*Re_factor+ ns(Sv,df=2)*Re_factor, data=turbulence)
+#summary(inter_model5)
+#plot(inter_model2, which=c(1))
+
+inter_model5_gam <- gam(R_moment_1 ~ Re_factor + St + ns(Sv,df=2) + St*Re_factor+ ns(Sv,df=2)*Re_factor, data=turbulence)
+summary(inter_model5_gam)
+plot(inter_model5_gam)
+
+```
+
+```{r}
+#inter_model5_glm = glm(R_moment_1 ~ Re_factor + St + ns(Sv,df=2) + St*Re_factor+ ns(Sv,df=2)*Re_factor, data=turbulence)
+cv.glm(turbulence, inter_model5_gam)$delta[1]
+```
+

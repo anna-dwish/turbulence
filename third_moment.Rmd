@@ -1,0 +1,69 @@
+---
+title: "third_moment"
+author: "Ashley Murray"
+date: "10/17/2020"
+output: html_document
+---
+
+```{r packages}
+library(broom)
+```
+
+```{r data}
+turbulence <- read.csv("data-train.csv")
+turbulence$Re <- as.factor(turbulence$Re)
+turbulence$Fr <- as.factor(turbulence$Fr)
+```
+
+```{r third-moment-plots}
+plot(turbulence$R_moment_3)
+plot(log(turbulence$R_moment_3))
+```
+
+```{r no-interactions}
+no_interactions <- lm(R_moment_3 ~ Re + Fr + St, data=turbulence)
+summary(no_interactions)
+log_no_interactions <- lm(log(R_moment_3) ~ Re + Fr + St, data=turbulence)
+summary(log_no_interactions)
+```
+
+```{r diagnostics, echo=FALSE}
+glance(no_interactions)
+glance(log_no_interactions)
+```
+
+```{r only-re}
+only_re <- lm(R_moment_3 ~ Re, data=turbulence)
+log_only_re <- lm(log(R_moment_3) ~ Re, data=turbulence)
+summary(only_re)
+summary(log_only_re)
+glance(only_re)
+glance(log_only_re)
+```
+
+```{r only-st}
+only_st <- lm(R_moment_3 ~ St, data = turbulence)
+log_only_st <- lm(log(R_moment_3) ~ St, data = turbulence)
+summary(only_st)
+summary(log_only_st)
+glance(only_st)
+glance(log_only_st)
+```
+
+```{r only-fr}
+only_fr <- lm(R_moment_3 ~ Fr, data = turbulence)
+log_only_fr <- lm(log(R_moment_3) ~ Fr, data = turbulence)
+summary(only_fr)
+summary(log_only_fr)
+glance(only_fr)
+glance(log_only_fr)
+```
+
+```{r all_interactions}
+all_interactions <- lm(R_moment_3 ~ Fr + St + Re + Fr*St + Fr*Re + St*Re, data=turbulence)
+summary(all_interactions)
+log_all_interactions <- lm(log(R_moment_3) ~ Fr + St + Re + Fr*St + Fr*Re + St*Re, data=turbulence)
+summary(log_all_interactions)
+glance(all_interactions)
+glance(log_all_interactions)
+```
