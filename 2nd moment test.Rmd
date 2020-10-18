@@ -15,49 +15,66 @@ library(tidyverse)
 
 ```{r data, include = FALSE}
 turbtrain <- read.csv("data-train.csv")
+turbtrain$Sv <- turbtrain$St / turbtrain$Fr
 ```
+
+```{r}
+plot(turbtrain$R_moment_2)
+plot(log(turbtrain$R_moment_2))
+```
+
+
 
 ```{r check-ranges}
 hist(turbtrain$St)
 hist(turbtrain$Re) #3 distinct groups
 hist(turbtrain$Fr) #2 distinct groups (+ infinity)
+hist(turbtrain$Sv)
 ```
 
 ```{r refactor}
 turbtrain$Re <- as.factor(turbtrain$Re)
 turbtrain$Fr <- as.factor(turbtrain$Fr)
+
+# fr = St/ sv
+# sv = st / fr
 ```
 
 
 ```{r relationships}
-par(mfrow = c(1, 3))
+par(mfrow = c(1, 4))
 plot(turbtrain$St, turbtrain$R_moment_2)
 plot(turbtrain$Re, turbtrain$R_moment_2)
 plot(turbtrain$Fr, turbtrain$R_moment_2)
+plot(turbtrain$Sv, turbtrain$R_moment_2)
 ```
 Most of the 2nd moment values for Re = 224 and Re = 398 are ~ 0, very small IQR (basically flat). Seeing similar results for `Fr`. 
 
-
+- maybe transform the moment itself
 
 ```{r regular-lm}
-baselm <- lm(R_moment_2 ~ St + Re + Fr, data = turbtrain)
+baselm <- lm(R_moment_2 ~ St + Re + Fr + Sv, data = turbtrain)
 summary(baselm)
+par(mfrow = c(2, 2))
+plot(baselm)
 ```
 p-value for St = 0.204 > 0.05, so potentially insignificant. Will run another lm without `St`.
 
 ```{r lm2}
-lm2 <- lm(R_moment_2 ~ Re + Fr, data = turbtrain)
+lm2 <- lm(R_moment_2 ~ Re + Fr + Sv, data = turbtrain)
 summary(lm2)
+par(mfrow = c(2, 2))
+plot(lm2)
 ```
 
 ```{r}
-lm3 <- lm(R_moment_2 ~ Re*Fr, data = turbtrain)
+lm3 <- lm(R_moment_2 ~ Re*Fr + Sv, data = turbtrain)
 summary(lm3)
 ```
 Tried with interaction terms and they do appear to be significant, so going to keep them in. But also Re398:Fr0.3 is returning NA, unclear why though. 
 
 ```{r polynomials}
-lm4 <- lm(R_moment_2 ~ Re + Fr + poly(St, 5), data = turbtrain)
+lm4 <- lm(R_moment_2 ~ Re*Fr + poly(Sv, 5), data = turbtrain)
 summary(lm4)
 ```
 `St` not even significant in polynomial form, so I think I'm going to keep not using it.
@@ -65,11 +82,22 @@ summary(lm4)
 Re and Fr are my only 2 relevant variables, so need to figure out more ways to play around with them besides just making them interact. 
 
 
+- st and all the interactions might make it a little better 
 
 
+```{r}
+lm5 <- lm(log(R_moment_2) ~ Re + Fr + St + Sv, data = turbtrain)
+summary(lm5)
+par(mfrow = c(2,2))
+plot(lm5)
+```
 
-
-
+```{r}
+lm6 <- lm(log(R_moment_2) ~ Re + Fr + St + Re*Fr + Re*St + Fr*St, data = turbtrain)
+summary(lm6)
+par(mfrow = c(2, 2))
+plot(lm6)
+```
 
 
 
