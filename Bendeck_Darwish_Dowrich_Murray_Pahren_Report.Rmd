@@ -46,9 +46,9 @@ set.seed(123)
 
 # Introduction
 
-One of the greatest areas of research in Physics today is the study of fluid motion [cite]. The applications of these investigations span across the aviation industry, astrophysics, oil spills in oceans, and more [cite]. For this case study, we will be exploring models to better understand and predict turbulence, which is defined to be "chaotic changes in pressure and flow velocity" [cite]. 
+One of the greatest areas of research in Physics today is the study of fluid motion [[1]][Bibliography]. The applications of these investigations span across the aviation industry, astrophysics, oil spills in oceans, and more [[1]][Bibliography]. For this case study, we will be exploring models to better understand and predict turbulence, which is defined to be "chaotic changes in pressure and flow velocity" [[2]][Bibliography]. 
 
-Our covariates of concern in this study are *Reynolds number (Re)*, *Freud's Number (Fr)*, and *Particle characteristic (St)*. *Reynolds number* captures the ratio between fluid velocity and the body size of the object moving through the fluid. *Freud's Number* specifies the gravity conditions of the fluid, and *Particle characteristic* provides information on the size and density of the particles. We will be modeling these covariates' relationship with the first four raw moments of particle cluster volumes in an idealized turbulence (homogeneous isotropic turbulence).
+Our covariates of concern in this study are *Reynolds number (Re)*, *Freud's Number (Fr)*, and *Particle characteristic (St)*. *Reynolds number* captures the ratio between fluid velocity and the body size of the object moving through the fluid [[1]][Bibliography]. *Freud's Number* specifies the gravity conditions of the fluid, and *Particle characteristic* provides information on the size and density of the particles [[1]][Bibliography]. We will be modeling these covariates' relationship with the first four raw moments of particle cluster volumes in an idealized turbulence (homogeneous isotropic turbulence).
 
 For this case study, our research objectives are:
 
@@ -141,7 +141,10 @@ plot(moment.4.mod, which=c(5))
 ```
 
 
+# Bibliography
 
+1. Momenifar, R., &amp; Holt, J. (2020). STA 325 - Lab 1. Lecture.
+2. Turbulence. (2020, October 12). Retrieved October 19, 2020, from https://en.wikipedia.org/wiki/Turbulence
 
 
 
