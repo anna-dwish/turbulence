@@ -1,0 +1,66 @@
+---
+title: "Turbulence Case Study"
+author: "Alexander Bendeck, Anna Darwish, Thea Dowrich, Ashley Murray, Matty Pahren"
+date: "10/19/2020"
+output: pdf_document
+---
+
+```{r, function checking for installed packages, echo=FALSE, results="hide", include=FALSE}
+# Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,repos = "http://cran.r-project.org", dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+```
+
+```{r Package Test Libraries, echo=FALSE, results="hide", include=FALSE}
+pkgTest("dplyr")
+pkgTest("ggplot2")
+pkgTest("tidyr")
+pkgTest("knitr")
+pkgTest("kableExtra")
+pkgTest("gridExtra")
+pkgTest("pander")
+pkgTest("tidyverse")
+```
+
+```{r Load in Libraries, echo=FALSE, results="hide", include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+library(pander)
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+ggplot2::theme_set(new = theme_bw())
+set.seed(123)
+```
+
+# Introduction
+
+One of the greatest areas of research in Physics today is the study of fluid motion [cite]. The applications of these investigation span across the aviation industry, astrophysics, oil spills in oceans, and more [cite]. For this case study, we will be exploring models to better understand and predict turbulence. Turbulence is defined to be "chaotic changes in pressure and flow velocity" [cite]. 
+
+For this case study, our research objectives are:
+
+1. 
+2. 
+
+# Methodology
+
+For each of our four models, we began by conducting exploratory data analysis with the predictors in our dataset. This informed our decisions for possible models, transformations, and interactions to explore. Given that one of our primary goals is to understand and interpret the relationship between *turbulence* and our predictors, we chose to use linear regression models but also explored polynomial and spline models to determine whether either provided significantly better predictive power. To compare different linear regression models for the same moment, we began by comparing adjusted *R^2* values, as it accounts for the inevitable improvement in training set predictions. To compare any two models across the different methodologies we attempted, we performed 5-fold cross validation and compared the estimated test errors.
+
+When predicting the first moment, we began with using we noticed that **, which motivated our decision to consider WOFEUI. This motivated our first model, 
+
+
+
+
+
+
