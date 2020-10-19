@@ -48,27 +48,12 @@ set.seed(123)
 
 One of the greatest areas of research in Physics today is the study of fluid motion [[1]][Bibliography]. The applications of these investigations span across the aviation industry, astrophysics, oil spills in oceans, and more [[1]][Bibliography]. For this case study, we will be exploring models to better understand and predict turbulence, which is defined to be "chaotic changes in pressure and flow velocity" [[2]][Bibliography]. 
 
-Our covariates of concern in this study are *Reynolds number (Re)*, *Freud's Number (Fr)*, and *Particle characteristic (St)*. *Reynolds number* captures the ratio between fluid velocity and the body size of the object moving through the fluid [[1]][Bibliography]. *Freud's Number* specifies the gravity conditions of the fluid, and *Particle characteristic* provides information on the size and density of the particles [[1]][Bibliography]. We will be modeling these covariates' relationship with the first four raw moments of particle cluster volumes in an idealized turbulence (homogeneous isotropic turbulence).
+Our covariates of concern in this study are *Reynolds number (Re)*, *Freud's Number (Fr)*, and *Particle characteristic (St)*. *Reynolds number* captures the ratio between fluid velocity and the body size of the object moving through the fluid [[1]][Bibliography]. *Freud's Number* specifies the gravity conditions of the fluid, and *Particle characteristic* provides information on the size and density of the particles [[1]][Bibliography]. We will be modeling these covariates' relationship with the first four raw moments of particle cluster volumes in an idealized turbulence (homogeneous isotropic turbulence). Please refer to the Data Dictionary in the Appendix for more details on these variables.
 
 For this case study, our research objectives are:
 
 1. Understand and interpret the relationship between the first four moments of particle cluster volumes and *Reynolds number*, *Freud's Number*, and *Particle characteristic*.
 2. Estimate the accuracy of our models
-
-```{r Data Dictionary, echo=F}
-data.dict <- data.frame(Variable = c(rep("Reynolds number (Re)", 1),
-                                          rep("Freud's Number (Fr)", 1),
-                                          rep("Particle characteristic (St)", 1),
-                                          rep(" (Sv)", 1)),
-                               Values = linebreak(c("90 (Low), 224 (Med), 398 (High)",
-                                                    "0.052 (Low), 0.300 (Med), Inf (High)",
-                                                    "[0.05, 3.00]",
-                                                    "[0.00,57.692]")))
-kable(data.dict, escape=F, booktabs = T, align = "ll", caption = "Data Dictionary") %>%
-  kable_styling(latex_options = c("hold_position")) %>%
-  column_spec(1, bold=T) %>%
-  collapse_rows(columns = 1, latex_hline = "major", valign = "middle")
-```
 
 # Methodology
 
@@ -82,7 +67,7 @@ To compare different linear regression models for the same moment, we began by c
 
 Finally, we examined residual and levereage plots for each of our four models to ensure we didn't violate any of the assumptions that accompany linear regression models.
 
-# Discussion
+# Results and Discussion
 
 ## Moment 1
 
@@ -101,10 +86,6 @@ levels(turbulence$Fr) <- c("Low", "Inf", "Med")
 ```{r Moment 1 Model, fig.align="center", fig.width=6, fig.height =4}
 moment.1.mod <- lm(R_moment_1 ~ Re + St + St*Re + Sv + Sv*Re, data=turbulence)
 pander(moment.1.mod, caption="Moment 1")
-
-par(mfrow = c(1, 2))
-plot(moment.1.mod, which=c(1))
-plot(moment.1.mod, which=c(5))
 ```
 
 ## Moment 2
@@ -112,10 +93,6 @@ plot(moment.1.mod, which=c(5))
 ```{r Moment 2 Model, fig.align="center", fig.width=8, fig.height =4}
 moment.2.mod <- lm(log(R_moment_2) ~ Re + Fr + St + Re*Fr, data = turbulence)
 pander(moment.2.mod, caption="Moment 3")
-
-par(mfrow = c(1, 2))
-plot(moment.2.mod, which=c(1))
-plot(moment.2.mod, which=c(5))
 ```
 
 ## Moment 3
@@ -123,10 +100,6 @@ plot(moment.2.mod, which=c(5))
 ```{r Moment 3 Model, fig.align="center", fig.width=8, fig.height =4}
 moment.3.mod <- lm(R_moment_3 ~ Re + Fr + St + Fr*St + Fr*Re + St*Re, data = turbulence)
 pander(moment.3.mod, caption="Moment 3")
-
-par(mfrow = c(1, 2))
-plot(moment.3.mod, which=c(1))
-plot(moment.3.mod, which=c(5))
 ```
 
 ## Moment 4
@@ -134,12 +107,64 @@ plot(moment.3.mod, which=c(5))
 ```{r Moment 4 Model, fig.align="center", fig.width=8, fig.height =4}
 moment.4.mod <- lm(log(R_moment_4) ~ Re + Sv + Sv^2 + St + St^2 + Re*Sv + Re*St + Sv*St, data=turbulence)
 pander(moment.4.mod, caption="Moment 4")
+```
 
+# Discussion
+
+\newpage
+
+# Appendix
+
+## Data Dictionary
+
+```{r Data Dictionary, echo=F}
+data.dict <- data.frame(Variable = c(rep("Reynolds number (Re)", 1),
+                                          rep("Freud's Number (Fr)", 1),
+                                          rep("Particle characteristic (St)", 1),
+                                          rep(" (Sv)", 1)),
+                               Values = linebreak(c("90 (Low), 224 (Med), 398 (High)",
+                                                    "0.052 (Low), 0.300 (Med), Inf (High)",
+                                                    "[0.05, 3.00]",
+                                                    "[0.00,57.692]")))
+kable(data.dict, escape=F, booktabs = T, align = "ll", caption = "Data Dictionary") %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  column_spec(1, bold=T) %>%
+  collapse_rows(columns = 1, latex_hline = "major", valign = "middle")
+```
+
+## Residual and Leverage Plots
+
+### Moment 1
+
+```{r Moment 1 Diagnostics, fig.align="center", fig.width=6, fig.height =4}
+par(mfrow = c(1, 2))
+plot(moment.1.mod, which=c(1))
+plot(moment.1.mod, which=c(5))
+```
+
+## Moment 2
+
+```{r Moment 2 Diagnostics, fig.align="center", fig.width=8, fig.height =4}
+par(mfrow = c(1, 2))
+plot(moment.2.mod, which=c(1))
+plot(moment.2.mod, which=c(5))
+```
+
+## Moment 3
+
+```{r Moment 3 Diagnostics, fig.align="center", fig.width=8, fig.height =4}
+par(mfrow = c(1, 2))
+plot(moment.3.mod, which=c(1))
+plot(moment.3.mod, which=c(5))
+```
+
+## Moment 4
+
+```{r Moment 4 Diagnostics, fig.align="center", fig.width=8, fig.height =4}
 par(mfrow = c(1, 2))
 plot(moment.4.mod, which=c(1))
 plot(moment.4.mod, which=c(5))
 ```
-
 
 # Bibliography
 
