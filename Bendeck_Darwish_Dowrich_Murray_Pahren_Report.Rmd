@@ -93,11 +93,14 @@ turbulence$Sv = turbulence$St / turbulence$Fr
 
 turbulence$Re <- as.factor(turbulence$Re)
 levels(turbulence$Re) <- c("Low", "Med", "High")
+
+turbulence$Fr <- as.factor(turbulence$Fr)
+levels(turbulence$Fr) <- c("Low", "Inf", "Med") 
 ```
 
 ```{r Moment 1 Model, fig.align="center", fig.width=6, fig.height =4}
 moment.1.mod <- lm(R_moment_1 ~ Re + St + St*Re + Sv + Sv*Re, data=turbulence)
-pander(moment.1.mod)
+pander(moment.1.mod, caption="Moment 1")
 
 par(mfrow = c(1, 2))
 plot(moment.1.mod, which=c(1))
@@ -106,23 +109,40 @@ plot(moment.1.mod, which=c(5))
 
 ## Moment 2
 
-```{r Read in Data, echo=FALSE}
-turbulence = read.csv("data-train.csv")
-
-turbulence$Sv = turbulence$St / turbulence$Fr
-
-turbulence$Re <- as.factor(turbulence$Re)
-levels(turbulence$Re) <- c("Low", "Med", "High")
-```
-
-```{r Moment 1 Model, fig.align="center", fig.width=6, fig.height =4}
-moment.1.mod <- lm(R_moment_1 ~ Re + St + St*Re + Sv + Sv*Re, data=turbulence)
-pander(moment.1.mod)
+```{r Moment 2 Model, fig.align="center", fig.width=8, fig.height =4}
+moment.2.mod <- lm(log(R_moment_2) ~ Re + Fr + St + Re*Fr, data = turbulence)
+pander(moment.2.mod, caption="Moment 3")
 
 par(mfrow = c(1, 2))
-plot(moment.1.mod, which=c(1))
-plot(moment.1.mod, which=c(5))
+plot(moment.2.mod, which=c(1))
+plot(moment.2.mod, which=c(5))
 ```
+
+## Moment 3
+
+```{r Moment 3 Model, fig.align="center", fig.width=8, fig.height =4}
+moment.3.mod <- lm(R_moment_3 ~ Re + Fr + St + Fr*St + Fr*Re + St*Re, data = turbulence)
+pander(moment.3.mod, caption="Moment 3")
+
+par(mfrow = c(1, 2))
+plot(moment.3.mod, which=c(1))
+plot(moment.3.mod, which=c(5))
+```
+
+## Moment 4
+
+```{r Moment 4 Model, fig.align="center", fig.width=8, fig.height =4}
+moment.4.mod <- lm(log(R_moment_4) ~ Re + Sv + Sv^2 + St + St^2 + Re*Sv + Re*St + Sv*St, data=turbulence)
+pander(moment.4.mod, caption="Moment 4")
+
+par(mfrow = c(1, 2))
+plot(moment.4.mod, which=c(1))
+plot(moment.4.mod, which=c(5))
+```
+
+
+
+
 
 
 
