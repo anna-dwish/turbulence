@@ -93,7 +93,7 @@ pander(moment.1.mod, caption="Moment 1")
 ## Moment 2
 
 ```{r Moment 2 Model, fig.align="center", fig.width=8, fig.height =4}
-moment.2.mod <- lm(log(R_moment_2) ~ Re + Fr + St + Re*Fr, data = turbulence)
+moment.2.mod <- lm(log(R_moment_2) ~ Re*Fr + Re*St + poly(St, 2), data = turbulence)
 pander(moment.2.mod, caption="Moment 3")
 ```
 

@@ -100,7 +100,7 @@ summary(lm4)
 `St` only significant in quadratic form, so will keep using that and $R^2$ now 0.88 so improving even more.
 
 ```{r}
-best_model <- lm(log(R_moment_2) ~ Re*Fr + Re*St + Fr*St + poly(St, 2), data = turbtrain)
+best_model <- lm(log(R_moment_2) ~ Re*Fr + Re*St + poly(St, 2), data = turbtrain)
 summary(best_model)
 par(mfrow = c(2,2))
 plot(lm5)
