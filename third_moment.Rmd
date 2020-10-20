@@ -67,3 +67,8 @@ summary(log_all_interactions)
 glance(all_interactions)
 glance(log_all_interactions)
 ```
+## The Best Model is:
+```{r}
+log_all_interactions <- lm(log(R_moment_3) ~ Fr + St + Re + Fr*St + Fr*Re + St*Re, data=turbulence)
+glance(log_all_interactions)
+```
