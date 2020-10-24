@@ -169,7 +169,7 @@ rownames(m3_preds_of_interest) = NULL
 pander(m3_preds_of_interest, caption="Selected Predictions for Moment 3")
 ```
 
-For this model, interaction effects lended to higher estimated test errors and were not significant in terms of their p-values. For this reason, they are no interaction effects in our final model for predicting the log of the 3rd moment. From the model output, we see that as the Reynold's number increases, we expect the log of the third moment of our response to decrease. This suggests the "lopsideness" of the distribution of the log of the 3rd moment decreases the ratio between fluid velocity and body size increases. Finally, there appears to be an increasing relationship in the log of the third moment and the *linear* effect of the settling parameter and a decreasing relationship with the *quadratic* effect of the settlign parameter. This suggests that there is a levelling off of the effect of the settling parameter as it increases.
+For this model, interaction effects lended to higher estimated test errors and were not significant in terms of their p-values. For this reason, they are no interaction effects in our final model for predicting the log of the 3rd moment. From the model output, we see that as the Reynold's number increases, we expect the log of the third moment of our response to decrease. This suggests the "lopsideness" of the distribution of the log of the 3rd moment decreases the ratio between fluid velocity and body size increases [[3]][Bibliography]. Finally, there appears to be an increasing relationship in the log of the third moment and the *linear* effect of the settling parameter and a decreasing relationship with the *quadratic* effect of the settlign parameter. This suggests that there is a levelling off of the effect of the settling parameter as it increases.
 
 From 5-fold cross validation, we achieve an estimated test error of `r round(cv.glm(turbulence, moment.3.mod.glm)$delta[1],3)`. From the abbreviated table of predictions, we see that our uncertainity slightly worsens for higher values of Reynold's number. These predictions reflect our model's results in that increasing Reynold's number generally lends to a lower estimate of the log of the third moment and generally increases for larger values of the settling parameter.
 
@@ -177,10 +177,11 @@ From 5-fold cross validation, we achieve an estimated test error of `r round(cv.
 
 ```{r Moment 4 Model, fig.align="center", fig.width=8, fig.height =4}
 moment.4.mod <- lm(log(R_moment_4) ~ Re + Sv + St + Re*Sv + Re*St + Sv*St, data=turbulence)
+moment.4.mod.glm <- glm(log(R_moment_4) ~ Re + Sv + St + Re*Sv + Re*St + Sv*St, data=turbulence)
 pander(moment.4.mod, caption="Moment 4")
 ```
 
-Holding all else constant, we expect the fourth moment for observations with a medium or high Reynolds number to be lower than that of observations with a low Reynolds number. For the baseline level (a low Reynolds number), increasing the settling parameter also increases the fourth moment. However, for medium and high Reynolds numbers, increasing the settling parameter does not lead to as large of an increase in the fourth moment, since the original settling parameter coefficient is reduced by the interactions. 
+Holding all else constant, we expect the fourth moment for observations with a medium or high Reynolds number to be lower than that of observations with a low Reynolds number. For the baseline level (a low Reynolds number), increasing the settling parameter also increases the fourth moment. However, for medium and high Reynolds numbers, increasing the settling parameter does not lead to as large of an increase in the fourth moment, since the original settling parameter coefficient is reduced by the interactions. From 5-fold cross-validation we achieved an estimated test error of `r round(cv.glm(turbulence, moment.4.mod.glm)$delta[1],3)`.
 
 ```{r moment-4-pred}
 m4.preds.raw = data.frame(predict(moment.4.mod, newdata=test, interval="prediction", level=0.95))
@@ -221,6 +222,7 @@ kable(data.dict, escape=F, booktabs = T, align = "ll", caption = "Data Dictionar
 
 1. Momenifar, R., &amp; Holt, J. (2020). STA 325 - Lab 1. Lecture.
 2. Turbulence. (2020, October 12). Retrieved October 19, 2020, from https://en.wikipedia.org/wiki/Turbulence
+3. Moment (Mathematics). (2020 October 20). Retrieved October 24, 2020 from https://en.wikipedia.org/wiki/Moment_(mathematics)#:~:text=The%20third%20central%20moment%20is,called%20the%20skewness%2C%20often%20%CE%B3.
 
 
 
