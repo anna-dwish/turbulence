@@ -112,7 +112,7 @@ m1.preds = m1.preds.raw %>% mutate(lwr = case_when(lwr <= 0 ~ 0,
                                                    TRUE ~ lwr))
 full_preds_df = cbind(test, m1.preds)
 
-full_preds_df = full_preds_df %>% select(c("Re", "St", "Sv", "fit", "lwr", "upr"))
+full_preds_df = full_preds_df %>% dplyr::select(c("Re", "St", "Sv", "fit", "lwr", "upr"))
 
 colnames(full_preds_df) = c("Re", "St", "Sv", "pred", "95% low pred", "95% high pred")
 
@@ -128,31 +128,51 @@ It makes sense that a medium or high Reynolds number greatly reduces the first m
 
 Consistent with the discussion above, we see that when predicting the first moment on new data, the predictions are very close to 0 when the Reynolds number is high or medium. We also see that in these cases, the upper 95% confidence interval leaves quite a bit of uncertainty around the prediction (note that the lower bounds of these CIs have been truncated at 0). However, when predicting the first moment when the Reynolds number is low, we predict higher first moments overall compared to when the Reynolds number is high or medium. We also see that increasing Stokes number and settling parameter increase the first moment prediction notably when the Reynolds number is low. Also, since the predictions are further from 0 with a low Reynolds number, the width of the confidence intervals is small compared to the predictions themselves.
 
-We evaluated our assumptions associated with this model and observed roughly even scatter about the 0 line in the residual plot, along with generally low Cook's Distance values, which can be found in the Appendix. 5-fold cross-validation yielded an average test error of `r round(cv.glm(turbulence, moment.1.mod.glm)$delta[1],3)` 
+We evaluated our assumptions associated with this model and observed roughly even scatter about the 0 line in the residual plot, along with generally low Cook's Distance values. 5-fold cross-validation yielded an average test error of `r round(cv.glm(turbulence, moment.1.mod.glm)$delta[1],5)` 
 
 ## Moment 2
 
 ```{r Moment 2 Model, fig.align="center", fig.width=8, fig.height =4}
 og.mod.2 <- lm(log(R_moment_2) ~ Re*Fr + Re*St + poly(St, 2), data = turbulence) # This is a rank deficient fit so the estimates of the coefficients are unreliable
-moment.2.mod <- glm(log(R_moment_2) ~ Sv + Re + St + St_2 + Sv*Re, data = turbulence)
+moment.2.mod.glm <- glm(log(R_moment_2) ~ Re + Sv + St + St_2 + Sv*Re, data = turbulence)
+moment.2.mod <- lm(log(R_moment_2) ~ Re + Sv + St + St_2 + Sv*Re, data = turbulence)
 pander(moment.2.mod, caption="Moment 2")
+
+m2.preds.raw = data.frame(predict(moment.2.mod, newdata=test, interval="prediction", level=0.95))
+m2_full_preds_df = cbind(test, m2.preds.raw)
+m2_full_preds_df = m2_full_preds_df %>% dplyr::select(c("Re", "St", "Sv", "Sv_2", "fit", "lwr", "upr"))
+colnames(m2_full_preds_df) = c("Re", "Sv", "St","St_2", "pred", "95% low pred", "95% high pred")
+m2_preds_of_interest = m2_full_preds_df[c(3, 10, 14, 15),]
+rownames(m2_preds_of_interest) = NULL
+pander(m2_preds_of_interest, caption="Selected Predictions for Moment 2")
 ```
 
-From the model output, we see that 
+From the model output, we see that as the Reynold's number increases, we expect the log of the second moment of our response to decrease. This suggests there is less variance in particule cluster volumes as the ratio between fluid velocity and body size increases. This effect can not be understood in isolation however, because of the interaction effect with the settling parameter, *Sv*. Despite the main effect of the settling parameter suggesting an increase in the log of the second moment of the response, this effect is reversed for higher levels of Reynold's number. Finally, there appears to be a quadratic relationship between the log of the second moment and the Stoke's number.
+
+From 5-fold cross validation, we achieve an estimated test error of `r round(cv.glm(turbulence, moment.2.mod.glm)$delta[1],3)`. From the abbreviated table of predictions, we see that our uncertainity worsens for larger values of Stoke's number. These predictions reflect our model's results in that increasing Reynold's number generally lends to a lower estimate of the second moment, even if the settling parameter values increases.
 
 ## Moment 3
 
 ```{r Moment 3 Model, fig.align="center", fig.width=8, fig.height =4}
 og.moment.3.mod <- glm(log(R_moment_3) ~ Fr + St + Re + Fr*St + Fr*Re + St*Re, data=turbulence) # also rank deficient fit
-moment.3.mod <- glm(log(R_moment_3) ~ Sv_2 + Sv + Re, data=turbulence)
+moment.3.mod.glm <- glm(log(R_moment_3) ~ Sv_2 + Sv + Re, data=turbulence)
+moment.3.mod <- lm(log(R_moment_3) ~ Sv_2 + Sv + Re, data=turbulence)
 pander(moment.3.mod, caption="Moment 3")
+
+m3.preds.raw = data.frame(predict(moment.3.mod, newdata=test, interval="prediction", level=0.95))
+m3_full_preds_df = cbind(test, m3.preds.raw)
+m3_full_preds_df = m3_full_preds_df %>% dplyr::select(c("Sv", "Sv_2", "Re", "fit", "lwr", "upr"))
+colnames(m3_full_preds_df) = c("Sv", "Sv_2", "Re", "pred", "95% low pred", "95% high pred")
+m3_preds_of_interest = m3_full_preds_df[c(6, 21, 4, 14),]
+rownames(m3_preds_of_interest) = NULL
+pander(m3_preds_of_interest, caption="Selected Predictions for Moment 3")
 ```
+
 
 ## Moment 4
 
 ```{r Moment 4 Model, fig.align="center", fig.width=8, fig.height =4}
 moment.4.mod <- lm(log(R_moment_4) ~ Re + Sv + St + Re*Sv + Re*St + Sv*St, data=turbulence)
-round(cv.glm(turbulence, moment.4.mod)$delta[1],3)
 pander(moment.4.mod, caption="Moment 4")
 ```
 
@@ -191,40 +211,6 @@ kable(data.dict, escape=F, booktabs = T, align = "ll", caption = "Data Dictionar
   kable_styling(latex_options = c("hold_position")) %>%
   column_spec(1, bold=T) %>%
   collapse_rows(columns = 1, latex_hline = "major", valign = "middle")
-```
-
-## Residual and Leverage Plots
-
-### Moment 1
-
-```{r Moment 1 Diagnostics, fig.align="center", fig.width=6, fig.height =4}
-par(mfrow = c(1, 2))
-plot(moment.1.mod, which=c(1))
-plot(moment.1.mod, which=c(5))
-```
-
-## Moment 2
-
-```{r Moment 2 Diagnostics, fig.align="center", fig.width=8, fig.height =4}
-par(mfrow = c(1, 2))
-plot(moment.2.mod, which=c(1))
-plot(moment.2.mod, which=c(5))
-```
-
-## Moment 3
-
-```{r Moment 3 Diagnostics, fig.align="center", fig.width=8, fig.height =4}
-par(mfrow = c(1, 2))
-plot(moment.3.mod, which=c(1))
-plot(moment.3.mod, which=c(5))
-```
-
-## Moment 4
-
-```{r Moment 4 Diagnostics, fig.align="center", fig.width=8, fig.height =4}
-par(mfrow = c(1, 2))
-plot(moment.4.mod, which=c(1))
-plot(moment.4.mod, which=c(5))
 ```
 
 # Bibliography
