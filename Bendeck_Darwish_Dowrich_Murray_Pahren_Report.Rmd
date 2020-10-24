@@ -181,7 +181,7 @@ moment.4.mod.glm <- glm(log(R_moment_4) ~ Re + Sv + St + Re*Sv + Re*St + Sv*St, 
 pander(moment.4.mod, caption="Moment 4")
 ```
 
-Holding all else constant, we expect the fourth moment for observations with a medium or high Reynolds number to be lower than that of observations with a low Reynolds number. For the baseline level (a low Reynolds number), increasing the settling parameter also increases the fourth moment. However, for medium and high Reynolds numbers, increasing the settling parameter does not lead to as large of an increase in the fourth moment, since the original settling parameter coefficient is reduced by the interactions. From 5-fold cross-validation we achieved an estimated test error of `r round(cv.glm(turbulence, moment.4.mod.glm)$delta[1],3)`.
+Holding all else constant, we expect the log of the fourth moment for observations with a medium or high Reynolds number to be lower than that of observations with a low Reynolds number. For the baseline level (a low Reynolds number), increasing the settling parameter also increases the log of the fourth moment. However, for medium and high Reynolds numbers, increasing the settling parameter does not lead to as large of an increase in the log of the fourth moment, since the original settling parameter coefficient is reduced by the interactions. From 5-fold cross-validation we achieved an estimated test error of `r round(cv.glm(turbulence, moment.4.mod.glm)$delta[1],3)`.
 
 ```{r moment-4-pred}
 m4.preds.raw = data.frame(predict(moment.4.mod, newdata=test, interval="prediction", level=0.95))
@@ -193,7 +193,7 @@ rownames(m4_preds_of_interest) = NULL
 pander(m4_preds_of_interest, caption="Selected Predictions for Moment 4")
 ```
 
-Consistent with what we saw above, for constant settling parameter and Stokes numbers, we see that observations with high Reynolds numbers have lower fourth moments when compared to observatiosn with low Reynolds number. Additionally, the higher settling parameter led to an even higher prediction for the observation with a low Reynolds number compared to the observation with a high Reynolds number. However, it is worth noting that these predictions have very wide prediction intervals, indicating that it would be possible to see opposite scenarios occur in nature. 
+Consistent with what we saw above, for constant settling parameter and Stokes numbers, we see that observations with high Reynolds numbers have lower log fourth moments when compared to observatiosn with low Reynolds number. Additionally, the higher settling parameter led to an even higher prediction for the observation with a low Reynolds number compared to the observation with a high Reynolds number. However, it is worth noting that these predictions have very wide prediction intervals, indicating that it would be possible to see opposite scenarios occur in nature. 
 
 # Conclusion
 
