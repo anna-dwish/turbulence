@@ -197,6 +197,8 @@ Consistent with what we saw above, for constant settling parameter and Stokes nu
 
 # Conclusion
 
+Our goals in this case study were to 1) model and interpret the relationship between *Reynolds number (Re)*, *Froude's Number (Fr)*, *Particle characteristic (St)*, and the *Settling Parameter (Sv)* and the first four moments of particle cluster volumes, which quantifies turbulence, and 2) estimate the test errors of our models. We accomplished this by first exploring various model types, interaction effects, and transformations. After, we chose our final models with cross validation and variable selection methods. Some of the key findings of our models is that the *Settling Parameter* served as a stronger predictor in place of *Froude's Number (Fr)* across all four models. Further, log transforming the the second, third, and fourth moments of particle cluster volumes lended much better to estimating a linear relationship with our covariates. Finally, for all moments except the third moment, the relationship between turbulence and the *Reynolds number (Re)* is dependent upon the value of the *Settling Parameter (Sv)*. For future studies, future models may wish to focus more directly on prediction to achieve a lower estimated test error, along with other values of the *Reynolds number (Re)* and *Froude's number (Fr)*.
+
 \newpage
 
 # Appendix
