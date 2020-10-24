@@ -1,6 +1,7 @@
 ---
 title: "Turbulence Case Study"
 author: "Alexander Bendeck, Anna Darwish, Thea Dowrich, Ashley Murray, Matty Pahren"
+geometry: "left=1.25cm,right=1.25cm,top=1.3cm,bottom=1.3cm"
 date: "10/19/2020"
 output: pdf_document
 ---
@@ -149,7 +150,7 @@ pander(m2_preds_of_interest, caption="Selected Predictions for Moment 2")
 
 From the model output, we see that as the Reynold's number increases, we expect the log of the second moment of our response to decrease. This suggests there is less variance in particule cluster volumes as the ratio between fluid velocity and body size increases. This effect can not be understood in isolation however, because of the interaction effect with the settling parameter, *Sv*. Despite the main effect of the settling parameter suggesting an increase in the log of the second moment of the response, this effect is reversed for higher levels of Reynold's number. Finally, there appears to be a quadratic relationship between the log of the second moment and the Stoke's number.
 
-From 5-fold cross validation, we achieve an estimated test error of `r round(cv.glm(turbulence, moment.2.mod.glm)$delta[1],3)`. From the abbreviated table of predictions, we see that our uncertainity worsens for larger values of Stoke's number. These predictions reflect our model's results in that increasing Reynold's number generally lends to a lower estimate of the second moment, even if the settling parameter values increases.
+From 5-fold cross validation, we achieve an estimated test error of `r round(cv.glm(turbulence, moment.2.mod.glm)$delta[1],3)`. From the abbreviated table of predictions, we see that our uncertainity worsens for larger values of Stoke's number. These predictions reflect our model's results in that increasing Reynold's number generally lends to a lower estimate of the log of  the second moment, even if the settling parameter values increases.
 
 ## Moment 3
 
@@ -161,13 +162,16 @@ pander(moment.3.mod, caption="Moment 3")
 
 m3.preds.raw = data.frame(predict(moment.3.mod, newdata=test, interval="prediction", level=0.95))
 m3_full_preds_df = cbind(test, m3.preds.raw)
-m3_full_preds_df = m3_full_preds_df %>% dplyr::select(c("Sv", "Sv_2", "Re", "fit", "lwr", "upr"))
-colnames(m3_full_preds_df) = c("Sv", "Sv_2", "Re", "pred", "95% low pred", "95% high pred")
-m3_preds_of_interest = m3_full_preds_df[c(6, 21, 4, 14),]
+m3_full_preds_df = m3_full_preds_df %>% dplyr::select(c("Re", "Sv", "Sv_2", "fit", "lwr", "upr"))
+colnames(m3_full_preds_df) = c("Re", "Sv", "Sv_2", "pred", "95% low pred", "95% high pred")
+m3_preds_of_interest = m3_full_preds_df[c(3, 10, 14, 15),]
 rownames(m3_preds_of_interest) = NULL
 pander(m3_preds_of_interest, caption="Selected Predictions for Moment 3")
 ```
 
+For this model, interaction effects lended to higher estimated test errors and were not significant in terms of their p-values. For this reason, they are no interaction effects in our final model for predicting the log of the 3rd moment. From the model output, we see that as the Reynold's number increases, we expect the log of the third moment of our response to decrease. This suggests the "lopsideness" of the distribution of the log of the 3rd moment decreases the ratio between fluid velocity and body size increases. Finally, there appears to be an increasing relationship in the log of the third moment and the *linear* effect of the settling parameter and a decreasing relationship with the *quadratic* effect of the settlign parameter. This suggests that there is a levelling off of the effect of the settling parameter as it increases.
+
+From 5-fold cross validation, we achieve an estimated test error of `r round(cv.glm(turbulence, moment.3.mod.glm)$delta[1],3)`. From the abbreviated table of predictions, we see that our uncertainity slightly worsens for higher values of Reynold's number. These predictions reflect our model's results in that increasing Reynold's number generally lends to a lower estimate of the log of the third moment and generally increases for larger values of the settling parameter.
 
 ## Moment 4
 
@@ -190,7 +194,7 @@ pander(m4_preds_of_interest, caption="Selected Predictions for Moment 4")
 
 Consistent with what we saw above, for constant settling parameter and Stokes numbers, we see that observations with high Reynolds numbers have lower fourth moments when compared to observatiosn with low Reynolds number. Additionally, the higher settling parameter led to an even higher prediction for the observation with a low Reynolds number compared to the observation with a high Reynolds number. However, it is worth noting that these predictions have very wide prediction intervals, indicating that it would be possible to see opposite scenarios occur in nature. 
 
-# Discussion
+# Conclusion
 
 \newpage
 
