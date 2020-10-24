@@ -67,7 +67,7 @@ For the second, third, and fourth moment, we noticed a curved relationship betwe
 
 To compare different linear regression models for the same moment, we began by comparing adjusted *R^2* values, as it compensates for added predictors that do not significantly improve the amount of explained variance in the response. To compare any two models across the different methodologies we attempted, we performed 5-fold cross validation and compared the estimated test errors.
 
-Finally, we examined residual and levereage plots for each of our four models to ensure we didn't violate any of the assumptions that accompany linear regression models.
+Finally, we examined residual and leverage plots for each of our four models to ensure we didn't violate any of the assumptions that accompany linear regression models.
 
 # Results and Discussion
 

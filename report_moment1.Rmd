@@ -1,0 +1,129 @@
+---
+title: "Turbulence Case Study"
+author: "Alexander Bendeck, Anna Darwish, Thea Dowrich, Ashley Murray, Matty Pahren"
+date: "10/19/2020"
+output: pdf_document
+---
+
+```{r, function checking for installed packages, echo=FALSE, results="hide", include=FALSE}
+# Validate that all necessary packaged have been downloaded, install otherwise or throw err package DNE
+pkgTest <- function(x)
+{
+  if (!require(x,character.only = TRUE))
+  {
+    install.packages(x,repos = "http://cran.r-project.org", dep=TRUE)
+    if(!require(x,character.only = TRUE)) stop("Package not found")
+  }
+}
+```
+
+```{r Package Test Libraries, echo=FALSE, results="hide", include=FALSE}
+pkgTest("dplyr")
+pkgTest("ggplot2")
+pkgTest("tidyr")
+pkgTest("knitr")
+pkgTest("kableExtra")
+pkgTest("gridExtra")
+pkgTest("pander")
+pkgTest("tidyverse")
+```
+
+```{r Load in Libraries, echo=FALSE, results="hide", include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+library(pander)
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+ggplot2::theme_set(new = theme_bw())
+set.seed(123)
+```
+
+# Introduction
+
+One of the greatest areas of research in Physics today is the study of fluid motion [[1]][Bibliography]. The applications of these investigations span across the aviation industry, astrophysics, oil spills in oceans, and more [[1]][Bibliography]. For this case study, we will be exploring models to better understand and predict turbulence, which is defined to be "chaotic changes in pressure and flow velocity" [[2]][Bibliography]. 
+
+Our covariates of concern in this study are *Reynolds number (Re)*, *Froude's Number (Fr)*, and *Stokes number (St)*. *Reynolds number* captures the ratio between fluid velocity and the body size of the object moving through the fluid [[1]][Bibliography]. *Froude's Number* specifies the gravity conditions of the fluid, and *Stokes number* provides information on the effect of inertia on the particles, which depends on the size and density of the particles [[1]][Bibliography]. We will be modeling these covariates' relationship with the first four raw moments of particle cluster volumes in an idealized turbulence (homogeneous isotropic turbulence). Please refer to the Data Dictionary in the Appendix for more details on these variables.
+
+For this case study, our research objectives are:
+
+1. Understand and interpret the relationship between the first four moments of particle cluster volumes and *Reynolds number*, *Froude's Number*, and *Stokes number*.
+2. Estimate the accuracy of our models
+
+# Methodology
+
+Prior studies on turbulence, as well as the presentation in lab by Reza and Jonathan, motivated us to consider the covariate of *settling parameter (Sv)*, which is the ratio of *Stokes number* to *Froude's Number*. This covariate is continuous and has finite values, so it was used in place of *Froude's Number*, which had only three levels and one level was infinity.
+
+For each of our four models, we began by conducting exploratory data analysis with the predictors in our dataset. This informed our decisions for possible models, transformations, and interactions to explore. Given that one of our primary goals is to understand and interpret the relationship between *turbulence* and our predictors, we chose to use linear regression models but also explored polynomial and spline models to determine whether either provided significantly better predictive power.
+
+For the second, third, and fourth moment, we noticed a curved relationship between the response and covariates, which motivated us to perform a logged transformation on the response.
+
+To compare different linear regression models for the same moment, we began by comparing adjusted *R^2* values, as it compensates for added predictors that do not significantly improve the amount of explained variance in the response. To compare any two models across the different methodologies we attempted, we performed 5-fold cross validation and compared the estimated test errors.
+
+Finally, we examined residual and leverage plots for each of our four models to ensure we didn't violate any of the assumptions that accompany linear regression models.
+
+# Results and Discussion
+
+```{r Read in Data, echo=FALSE}
+turbulence = read.csv("data-train.csv")
+
+turbulence$Sv = turbulence$St / turbulence$Fr
+
+turbulence$Re <- as.factor(turbulence$Re)
+levels(turbulence$Re) <- c("Low", "Med", "High")
+
+turbulence$Fr <- as.factor(turbulence$Fr)
+levels(turbulence$Fr) <- c("Low", "Inf", "Med") 
+```
+
+```{r Read in Test, echo=FALSE}
+test = read.csv("data-test.csv")
+test$Sv = test$St / test$Fr
+
+test$Re <- as.factor(test$Re)
+levels(test$Re) <- c("Low", "Med", "High")
+
+test$Fr <- as.factor(test$Fr)
+levels(test$Fr) <- c("Low", "Inf", "Med") 
+
+```
+
+## Moment 1
+
+```{r Moment 1 Model, fig.align="center", fig.width=6, fig.height =4}
+turbulence$Sv_2 = turbulence$Sv^2
+
+moment.1.mod <- lm(R_moment_1 ~ Re + St + St*Re + Sv + Sv*Re + Sv_2 + Sv_2*Re, data=turbulence)
+pander(moment.1.mod, caption="Moment 1")
+```
+
+From the model output, we see that for the baseline level (low Reynolds number), increased Stokes number and settling parameter have a notable effect of increasing the first moment. Settling parameter has a nonlinear effect. Having a medium or high Reynolds number effectively lowers the intercept in these cases to 0, since the main effects for these two factor levels basically cancel out the overall intercept term. Similarly, the interaction between Stokes number and both medium and high Reynolds number seems to cancel out the main effect of Stokes number. In other words, the effect of increasing Stokes number on the first moment is close to 0 when the Reynolds number is medium or high. This is likewise true for the effect of settling parameter.
+
+It makes sense that a medium or high Reynolds number greatly reduces the first moment. The first moment represents the average size of particle clusters. The Reynolds number measures turbulence, so if the turbulence is moderate to high, we would expect to not see very large particle clusters due to turbulent flow. It also makes sense that increasing the Stokes number, a measure of inertia, would cause greater cluster sizes, but only when there is low turbulence.
+
+```{r Moment 1 Predictions}
+test$Sv_2 = test$Sv^2
+
+m1.preds.raw = data.frame(predict(moment.1.mod, newdata=test, interval="prediction", level=0.95))
+
+m1.preds = m1.preds.raw %>% mutate(lwr = case_when(lwr <= 0 ~ 0,
+                                                   TRUE ~ lwr))
+full_preds_df = cbind(test, m1.preds)
+
+full_preds_df = full_preds_df %>% select(c("Re", "St", "Sv", "fit", "lwr", "upr"))
+
+colnames(full_preds_df) = c("Re", "St", "Sv", "pred", "95% low pred", "95% high pred")
+
+preds_of_interest = full_preds_df[c(3, 10, 14, 15),]
+rownames(preds_of_interest) = NULL
+
+pander(preds_of_interest, caption="Selected Predictions for Moment 1")
+```
+
+Consistent with the discussion above, we see that when predicting the first moment on new data, the predictions are very close to 0 when the Reynolds number is high or medium. We also see that in these cases, the upper 95% confidence interval leaves quite a bit of uncertainty around the prediction (note that the lower bounds of these CIs have been truncated at 0). However, when predicting the first moment when the Reynolds number is low, we predict higher first moments overall compared to when the Reynolds number is high or medium. We also see that increasing Stokes number and settling parameter increase the first moment prediction notably when the Reynolds number is low. Also, since the predictions are further from 0 with a low Reynolds number, the width of the confidence intervals is small compared to the predictions themselves.
+
