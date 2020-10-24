@@ -134,10 +134,11 @@ We evaluated our assumptions associated with this model and observed roughly eve
 
 ```{r Moment 2 Model, fig.align="center", fig.width=8, fig.height =4}
 og.mod.2 <- lm(log(R_moment_2) ~ Re*Fr + Re*St + poly(St, 2), data = turbulence) # This is a rank deficient fit so the estimates of the coefficients are unreliable
-moment.2.mod <- glm(log(R_moment_2) ~ Sv + Re + St + St_2, data = turbulence)
+moment.2.mod <- glm(log(R_moment_2) ~ Sv + Re + St + St_2 + Sv*Re, data = turbulence)
 pander(moment.2.mod, caption="Moment 2")
 ```
 
+From the model output, we see that 
 
 ## Moment 3
 
@@ -154,7 +155,6 @@ moment.4.mod <- lm(log(R_moment_4) ~ Re + Sv + St + Re*Sv + Re*St + Sv*St, data=
 round(cv.glm(turbulence, moment.4.mod)$delta[1],3)
 pander(moment.4.mod, caption="Moment 4")
 ```
-
 
 Holding all else constant, we expect the fourth moment for observations with a medium or high Reynolds number to be lower than that of observations with a low Reynolds number. For the baseline level (a low Reynolds number), increasing the settling parameter also increases the fourth moment. However, for medium and high Reynolds numbers, increasing the settling parameter does not lead to as large of an increase in the fourth moment, since the original settling parameter coefficient is reduced by the interactions. 
 
