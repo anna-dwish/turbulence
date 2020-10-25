@@ -66,9 +66,9 @@ For each of our four models, we began by conducting exploratory data analysis wi
 
 For the second, third, and fourth moment, we noticed a curved relationship between the response and covariates, which motivated us to perform a logged transformation on the response.
 
-To compare different linear regression models for the same moment, we began by comparing adjusted *R^2* values, as it compensates for added predictors that do not significantly improve the amount of explained variance in the response. To compare any two models across the different methodologies we attempted, we performed 5-fold cross validation and compared the estimated test errors.
+To compare different linear regression models for the same moment, we began by comparing adjusted $R^2$ values, as it compensates for added predictors that do not significantly improve the amount of explained variance in the response. To compare any two models across the different methodologies we attempted, we performed 5-fold cross validation and compared the estimated test errors.
 
-Finally, we examined residual and leverage plots for each of our four models to ensure we didn't violate any of the assumptions that accompany linear regression models.
+Finally, we examined residual and leverage plots for each of our four models to ensure we didn't violate any of the assumptions that accompany linear regression models. All residual and leverage plots are located in the Appendix.
 
 # Results and Discussion
 
@@ -218,6 +218,32 @@ kable(data.dict, escape=F, booktabs = T, align = "ll", caption = "Data Dictionar
   kable_styling(latex_options = c("hold_position")) %>%
   column_spec(1, bold=T) %>%
   collapse_rows(columns = 1, latex_hline = "major", valign = "middle")
+```
+
+## Residual and Leverage Plots
+
+```{r fig.height=3,fig.width=8}
+par(mfrow = c(1, 2))
+plot(moment.1.mod, which=c(1))
+plot(moment.1.mod, which=c(5))
+```
+
+```{r fig.height=3,fig.width=8}
+par(mfrow = c(1, 2))
+plot(moment.2.mod, which=c(1))
+plot(moment.2.mod, which=c(5))
+```
+
+```{r fig.height=3,fig.width=8}
+par(mfrow = c(1, 2))
+plot(moment.3.mod, which=c(1))
+plot(moment.3.mod, which=c(5))
+```
+
+```{r fig.height=3,fig.width=8}
+par(mfrow = c(1, 2))
+plot(moment.4.mod, which=c(1))
+plot(moment.4.mod, which=c(5))
 ```
 
 # Bibliography
