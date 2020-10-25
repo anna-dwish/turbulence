@@ -49,14 +49,14 @@ set.seed(123)
 
 # Introduction
 
-One of the greatest areas of research in Physics today is the study of fluid motion [[1]][Bibliography]. The applications of these investigations span across the aviation industry, astrophysics, oil spills in oceans, and more [[1]][Bibliography]. Turbulence is defined to be "chaotic changes in pressure and flow velocity" [[2]][Bibliography]. For this case study, we will be exploring models to better understand and predict particle volume cluster under homogenous isotropic turbulence.
+One of the greatest areas of research in Physics today is the study of fluid motion [[1]][Bibliography]. The applications of these investigations span across the aviation industry, astrophysics, oil spills in oceans, and more [[1]][Bibliography]. Turbulence is defined to be "chaotic changes in pressure and flow velocity" [[2]][Bibliography]. For this case study, we will be exploring models to better understand and predict particle volume cluster under homogeneous isotropic turbulence.
 
 Our covariates of concern in this study are *Reynolds number (Re)*, *Froude's Number (Fr)*, and *Particle characteristic (St)*. *Reynolds number* captures the ratio between fluid velocity and the body size of the object moving through the fluid [[1]][Bibliography]. *Froude's Number* specifies the gravity conditions of the fluid, and *Particle characteristic* provides information on the size and density of the particles [[1]][Bibliography]. We will be modeling these covariates' relationship with the first four raw moments of particle cluster volumes in an idealized turbulence. Please refer to the Data Dictionary in the Appendix for more details on these variables.
 
 For this case study, our research objectives are:
 
 1. Understand and interpret the relationship between the first four moments of particle cluster volumes and *Reynolds number*, *Froude's Number*, and *Particle characteristic*.
-2. Estimate the accuracy of our models
+2. Estimate the accuracy of our models.
 
 # Methodology
 
