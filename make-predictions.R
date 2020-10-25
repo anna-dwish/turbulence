@@ -115,5 +115,9 @@ final_predictions_all = predictions_df %>% select(c("moment1_pred", "moment2_pre
 
 preds_with_predictors = cbind(test, final_predictions_all)
 
+preds_with_predictors$moment2_pred = exp(preds_with_predictors$moment2_pred)
+preds_with_predictors$moment3_pred = exp(preds_with_predictors$moment3_pred)
+preds_with_predictors$moment4_pred = exp(preds_with_predictors$moment4_pred)
+
 write.csv(preds_with_predictors, "test_predictions.csv", row.names=F)
 
