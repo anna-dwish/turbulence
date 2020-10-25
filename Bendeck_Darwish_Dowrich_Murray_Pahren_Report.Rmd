@@ -209,7 +209,7 @@ Our goals in this case study were to 1) model and interpret the relationship bet
 data.dict <- data.frame(Variable = c(rep("Reynolds number (Re)", 1),
                                           rep("Froude's Number (Fr)", 1),
                                           rep("Particle characteristic (St)", 1),
-                                          rep(" (Sv)", 1)),
+                                          rep("Settling Parameter (Sv)", 1)),
                                Values = linebreak(c("90 (Low), 224 (Med), 398 (High)",
                                                     "0.052 (Low), 0.300 (Med), Inf (High)",
                                                     "[0.05, 3.00]",
